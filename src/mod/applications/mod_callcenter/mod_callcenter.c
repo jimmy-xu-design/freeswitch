@@ -2836,7 +2836,7 @@ void *SWITCH_THREAD_FUNC cc_member_thread_run(switch_thread_t *thread, void *obj
 	if (member_session) {
 		member_channel = switch_core_session_get_channel(member_session);
 	} else {
-		switch_core_destroy_memory_pool(&m->pool);
+		//switch_core_destroy_memory_pool(&m->pool);
 		return NULL;
 	}
 
@@ -2931,7 +2931,7 @@ void *SWITCH_THREAD_FUNC cc_member_thread_run(switch_thread_t *thread, void *obj
 	}
 
 	switch_core_session_rwunlock(member_session);
-	switch_core_destroy_memory_pool(&m->pool);
+	//switch_core_destroy_memory_pool(&m->pool);
 
 	switch_mutex_lock(globals.mutex);
 	globals.threads--;
@@ -3155,7 +3155,7 @@ SWITCH_STANDARD_APP(callcenter_function)
 	h->running = 1;
 
 	switch_threadattr_create(&thd_attr, h->pool);
-	switch_threadattr_detach_set(thd_attr, 1);
+	//switch_threadattr_detach_set(thd_attr, 1);
 	switch_threadattr_stacksize_set(thd_attr, SWITCH_THREAD_STACKSIZE);
 	switch_thread_create(&thread, thd_attr, cc_member_thread_run, h, h->pool);
 
@@ -3303,6 +3303,16 @@ SWITCH_STANDARD_APP(callcenter_function)
 
 end:
 
+	if (thread != NULL)
+	{
+		switch_status_t state;
+		switch_thread_join(&state, thread);
+	}
+
+	if (pool != NULL)
+	{
+		switch_core_destroy_memory_pool(&pool);
+	}
 	return;
 }
 
